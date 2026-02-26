@@ -23,148 +23,145 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col font-sans text-gray-900">
-      <header className="sticky top-0 z-50 w-full glass-panel border-b border-white/20">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+    <div className="min-h-screen flex flex-col font-sans bg-bg text-[var(--text-primary)]">
+      <header className="sticky top-0 z-50 w-full bg-white/70 backdrop-blur-xl border-b border-[var(--border)]">
+        <div className="max-w-[1280px] mx-auto px-6 h-16 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2.5">
+            <div className="w-9 h-9 bg-primary rounded-[12px] flex items-center justify-center">
               <Home className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-primary tracking-tight">HomeLink</span>
+            <span className="text-lg font-semibold text-primary tracking-tight">HomeLink</span>
           </Link>
 
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-6">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary flex items-center gap-1.5",
-                  location.pathname === item.path ? "text-primary font-semibold" : "text-gray-600"
-                )}
-              >
-                <item.icon className="w-4 h-4" />
-                {item.name}
-              </Link>
-            ))}
-            
-            {/* Demo Dashboards Dropdown Trigger (Simplified as links for now) */}
-            <div className="h-6 w-px bg-gray-300 mx-2" />
-            <div className="flex gap-3 text-xs font-medium text-gray-500">
+          <nav className="hidden md:flex items-center gap-8">
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={cn(
+                    'text-sm font-medium transition-colors flex items-center gap-1.5 py-2 relative',
+                    isActive
+                      ? 'text-primary'
+                      : 'text-[var(--text-secondary)] hover:text-primary'
+                  )}
+                >
+                  <item.icon className="w-4 h-4 shrink-0" />
+                  {item.name}
+                  {isActive && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
+                  )}
+                </Link>
+              );
+            })}
+            <div className="h-5 w-px bg-[var(--border)] mx-1" />
+            <div className="flex gap-4 text-xs font-medium text-[var(--text-secondary)]">
               {dashboardItems.map((item) => (
-                <Link key={item.path} to={item.path} className="hover:text-primary transition-colors">
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className="hover:text-primary transition-colors"
+                >
                   {item.name}
                 </Link>
               ))}
             </div>
-
-            <div className="h-6 w-px bg-gray-300 mx-2" />
-            <Button variant="outline" size="sm" className="rounded-lg">Log In</Button>
-            <Button size="sm" className="rounded-lg">Get Started</Button>
+            <div className="h-5 w-px bg-[var(--border)] mx-1" />
+            <Button variant="outline" size="sm">
+              Log In
+            </Button>
+            <Button size="sm">Get Started</Button>
           </nav>
 
-          {/* Mobile Menu Toggle */}
           <button
-            className="md:hidden p-2 text-gray-600"
+            type="button"
+            className="md:hidden p-2 rounded-[12px] text-[var(--text-secondary)] hover:bg-[#f1f5f9] transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle menu"
           >
-            {isMobileMenuOpen ? <X /> : <Menu />}
+            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </header>
 
-      {/* Mobile Nav */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="md:hidden fixed inset-x-0 top-16 z-40 glass-panel border-b border-white/20 p-4 shadow-lg"
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden fixed inset-x-0 top-16 z-40 bg-white border-b border-[var(--border)] shadow-[0_8px_30px_rgba(15,23,42,0.06)] p-4"
           >
-            <nav className="flex flex-col gap-4">
+            <nav className="flex flex-col gap-1">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 p-3 rounded-xl transition-colors",
-                    location.pathname === item.path ? "bg-primary/10 text-primary" : "text-gray-600 hover:bg-gray-100/50"
+                    'flex items-center gap-3 px-4 py-3 rounded-[12px] transition-colors font-medium',
+                    location.pathname === item.path
+                      ? 'bg-[var(--accent-soft)] text-primary'
+                      : 'text-[var(--text-secondary)] hover:bg-[#f8fafc]'
                   )}
                 >
                   <item.icon className="w-5 h-5" />
-                  <span className="font-medium">{item.name}</span>
+                  {item.name}
                 </Link>
               ))}
-              <div className="h-px bg-gray-200 my-2" />
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3">Dashboards (Demo)</p>
+              <div className="h-px bg-[var(--border)] my-2" />
+              <p className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider px-4 py-2">
+                Dashboards
+              </p>
               {dashboardItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="block px-3 py-2 text-sm text-gray-600 hover:text-primary font-medium"
+                  className="px-4 py-2.5 text-sm text-[var(--text-secondary)] hover:text-primary font-medium"
                 >
                   {item.name}
                 </Link>
               ))}
-              <div className="h-px bg-gray-200 my-2" />
-              <div className="grid grid-cols-2 gap-3">
-                <Button variant="outline" className="w-full justify-center">Log In</Button>
-                <Button className="w-full justify-center">Get Started</Button>
+              <div className="h-px bg-[var(--border)] my-2" />
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <Button variant="outline" size="sm" className="w-full">
+                  Log In
+                </Button>
+                <Button size="sm" className="w-full">
+                  Get Started
+                </Button>
               </div>
             </nav>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <main className="flex-1">
+      <main className="flex-1 max-w-[1280px] w-full mx-auto px-6 py-8">
         {children}
       </main>
 
-      <footer className="bg-primary text-white py-12 mt-20">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
-                  <Home className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-xl font-bold">HomeLink</span>
+      <footer className="border-t border-[var(--border)] bg-[var(--surface)] py-6 mt-auto">
+        <div className="max-w-[1280px] mx-auto px-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-primary rounded-[12px] flex items-center justify-center">
+                <Home className="w-4 h-4 text-white" />
               </div>
-              <p className="text-primary-100 text-sm leading-relaxed">
-                Connecting families to safe, affordable housing and government assistance programs.
-              </p>
+              <span className="font-semibold text-[var(--text-primary)]">HomeLink</span>
             </div>
-            <div>
-              <h4 className="font-semibold mb-4">Platform</h4>
-              <ul className="space-y-2 text-sm text-primary-100">
-                <li><Link to="/housing" className="hover:text-white">Browse Housing</Link></li>
-                <li><Link to="/eligibility" className="hover:text-white">Check Eligibility</Link></li>
-                <li><Link to="/programs" className="hover:text-white">Government Programs</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Resources</h4>
-              <ul className="space-y-2 text-sm text-primary-100">
-                <li><a href="#" className="hover:text-white">Help Center</a></li>
-                <li><a href="#" className="hover:text-white">Application Guide</a></li>
-                <li><a href="#" className="hover:text-white">Tenant Rights</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Contact</h4>
-              <ul className="space-y-2 text-sm text-primary-100">
-                <li>support@homelink.gov</li>
-                <li>1-800-HOME-LINK</li>
-              </ul>
+            <div className="flex flex-wrap gap-6 text-sm text-[var(--text-secondary)]">
+              <Link to="/housing" className="hover:text-primary transition-colors">Housing</Link>
+              <Link to="/eligibility" className="hover:text-primary transition-colors">Eligibility</Link>
+              <Link to="/programs" className="hover:text-primary transition-colors">Programs</Link>
+              <a href="#" className="hover:text-primary transition-colors">Help</a>
             </div>
           </div>
-          <div className="border-t border-white/10 mt-12 pt-8 text-center text-sm text-primary-200">
-            © 2026 HomeLink. An official housing access initiative.
-          </div>
+          <p className="mt-4 text-xs text-[var(--text-secondary)]">
+            © {new Date().getFullYear()} HomeLink. Connecting families to safe, affordable housing.
+          </p>
         </div>
       </footer>
     </div>

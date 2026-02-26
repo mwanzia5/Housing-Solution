@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
-import { GlassCard } from '@/components/ui/GlassCard';
+import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { MapPin, Filter, DollarSign, Users, CheckCircle } from 'lucide-react';
+import { Input } from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
+import { Badge } from '@/components/ui/Badge';
+import { Modal } from '@/components/ui/Modal';
+import { MapPin, Filter, CheckCircle, Users } from 'lucide-react';
 import { motion } from 'motion/react';
+import { Link } from 'react-router-dom';
+import { formatKESShort } from '@/lib/format';
 
 const HOUSING_DATA = [
   {
     id: 1,
     title: 'Greenwood Social Housing',
     location: 'Downtown District',
-    rent: 450,
+    rent: 8500,
     type: 'Apartment',
     beds: 2,
     baths: 1,
@@ -21,7 +27,7 @@ const HOUSING_DATA = [
     id: 2,
     title: 'Sunrise Community Homes',
     location: 'Westside Gardens',
-    rent: 600,
+    rent: 12000,
     type: 'Townhouse',
     beds: 3,
     baths: 2,
@@ -33,7 +39,7 @@ const HOUSING_DATA = [
     id: 3,
     title: 'Oakwood Senior Living',
     location: 'North Hills',
-    rent: 350,
+    rent: 6000,
     type: 'Studio',
     beds: 1,
     baths: 1,
@@ -45,7 +51,7 @@ const HOUSING_DATA = [
     id: 4,
     title: 'Metro Affordable Units',
     location: 'City Center',
-    rent: 550,
+    rent: 15000,
     type: 'Apartment',
     beds: 2,
     baths: 1,
@@ -57,7 +63,7 @@ const HOUSING_DATA = [
     id: 5,
     title: 'Riverview Cooperative',
     location: 'East River',
-    rent: 400,
+    rent: 9500,
     type: 'Apartment',
     beds: 2,
     baths: 1,
@@ -69,7 +75,7 @@ const HOUSING_DATA = [
     id: 6,
     title: 'Highland Park Homes',
     location: 'Highland Park',
-    rent: 700,
+    rent: 22000,
     type: 'Single Family',
     beds: 4,
     baths: 2,
@@ -79,145 +85,183 @@ const HOUSING_DATA = [
   },
 ];
 
+type House = (typeof HOUSING_DATA)[number];
+
 export default function Housing() {
   const [filters, setFilters] = useState({
-    maxRent: 1000,
+    maxRent: 50000,
     type: 'All',
     subsidized: false,
   });
+  const [detailsUnit, setDetailsUnit] = useState<House | null>(null);
 
-  const filteredHousing = HOUSING_DATA.filter((house) => {
-    return (
+  const filteredHousing = HOUSING_DATA.filter(
+    (house) =>
       house.rent <= filters.maxRent &&
       (filters.type === 'All' || house.type === filters.type) &&
       (!filters.subsidized || house.subsidized)
-    );
-  });
+  );
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* Sidebar Filters */}
-        <aside className="w-full md:w-80 shrink-0 space-y-6">
-          <GlassCard className="sticky top-24 p-6">
-            <div className="flex items-center gap-2 mb-6 text-primary">
-              <Filter className="w-5 h-5" />
-              <h2 className="font-semibold text-lg">Filters</h2>
-            </div>
-
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Max Monthly Rent: ${filters.maxRent}
-                </label>
-                <input
-                  type="range"
-                  min="0"
-                  max="2000"
-                  step="50"
-                  value={filters.maxRent}
-                  onChange={(e) => setFilters({ ...filters, maxRent: parseInt(e.target.value) })}
-                  className="w-full accent-primary h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Housing Type</label>
-                <select
-                  value={filters.type}
-                  onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-                  className="w-full p-2.5 rounded-lg border border-gray-300 bg-white/50 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none"
-                >
-                  <option value="All">All Types</option>
-                  <option value="Apartment">Apartment</option>
-                  <option value="Townhouse">Townhouse</option>
-                  <option value="Studio">Studio</option>
-                  <option value="Single Family">Single Family</option>
-                </select>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="subsidized"
-                  checked={filters.subsidized}
-                  onChange={(e) => setFilters({ ...filters, subsidized: e.target.checked })}
-                  className="w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary"
-                />
-                <label htmlFor="subsidized" className="text-sm font-medium text-gray-700">
-                  Government Subsidized Only
-                </label>
-              </div>
-
-              <Button className="w-full mt-4">Apply Filters</Button>
-            </div>
-          </GlassCard>
-        </aside>
-
-        {/* Listings Grid */}
-        <div className="flex-1">
-          <div className="mb-6 flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-900">Available Housing</h1>
-            <span className="text-gray-500 text-sm">{filteredHousing.length} units found</span>
+    <div className="flex flex-col lg:flex-row gap-8">
+      <aside className="w-full lg:w-80 shrink-0">
+        <Card className="sticky top-24 p-6">
+          <div className="flex items-center gap-2 mb-6 text-primary">
+            <Filter className="w-5 h-5" />
+            <h2 className="font-semibold text-lg text-[var(--text-primary)]">Filters</h2>
           </div>
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                Max Monthly Rent: {formatKESShort(filters.maxRent)}
+              </label>
+              <input
+                type="range"
+                min="5000"
+                max="100000"
+                step="1000"
+                value={filters.maxRent}
+                onChange={(e) => setFilters({ ...filters, maxRent: parseInt(e.target.value) })}
+                className="w-full h-2 rounded-[999px] bg-[var(--border)] appearance-none cursor-pointer accent-accent"
+              />
+            </div>
+            <Select
+              label="Housing Type"
+              value={filters.type}
+              onChange={(e) => setFilters({ ...filters, type: e.target.value })}
+            >
+              <option value="All">All Types</option>
+              <option value="Apartment">Apartment</option>
+              <option value="Townhouse">Townhouse</option>
+              <option value="Studio">Studio</option>
+              <option value="Single Family">Single Family</option>
+            </Select>
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="subsidized"
+                checked={filters.subsidized}
+                onChange={(e) => setFilters({ ...filters, subsidized: e.target.checked })}
+                className="w-4 h-4 rounded text-accent focus:ring-accent/40"
+              />
+              <label htmlFor="subsidized" className="text-sm font-medium text-[var(--text-primary)]">
+                Government Subsidized Only
+              </label>
+            </div>
+            <Button className="w-full">Apply Filters</Button>
+          </div>
+        </Card>
+      </aside>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {filteredHousing.map((house) => (
-              <motion.div
-                key={house.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <GlassCard className="p-0 overflow-hidden h-full flex flex-col group" hoverEffect>
-                  <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={house.image}
-                      alt={house.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    {house.subsidized && (
-                      <div className="absolute top-3 left-3 bg-secondary text-primary-900 text-xs font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1">
+      <div className="flex-1 min-w-0">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <h1 className="text-2xl font-semibold text-[var(--text-primary)] tracking-tight">
+            Available Housing
+          </h1>
+          <span className="text-sm text-[var(--text-secondary)]">
+            {filteredHousing.length} units found
+          </span>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-6">
+          {filteredHousing.map((house) => (
+            <motion.div
+              key={house.id}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Card className="p-0 overflow-hidden h-full flex flex-col hover:shadow-[0_12px_40px_rgba(15,23,42,0.08)] transition-shadow group">
+                <div className="relative h-44 overflow-hidden">
+                  <img
+                    src={house.image}
+                    alt={house.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  {house.subsidized && (
+                    <div className="absolute top-3 left-3">
+                      <Badge variant="success">
                         <CheckCircle className="w-3 h-3" /> Subsidized
-                      </div>
-                    )}
-                    <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-md text-white px-3 py-1 rounded-lg text-sm font-semibold">
-                      ${house.rent}/mo
+                      </Badge>
+                    </div>
+                  )}
+                  <div className="absolute bottom-3 right-3 bg-[var(--text-primary)]/80 backdrop-blur-sm text-white px-3 py-1.5 rounded-[var(--radius)] text-sm font-medium">
+                    {formatKESShort(house.rent)}/mo
+                  </div>
+                </div>
+                <div className="p-5 flex-1 flex flex-col">
+                  <h3 className="font-semibold text-[var(--text-primary)] line-clamp-1 mb-2">
+                    {house.title}
+                  </h3>
+                  <div className="flex items-center text-[var(--text-secondary)] text-sm mb-4">
+                    <MapPin className="w-4 h-4 mr-1.5 shrink-0" />
+                    {house.location}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 mb-4 text-sm text-[var(--text-secondary)]">
+                    <div className="flex items-center gap-2 bg-[#f8fafc] p-2 rounded-[var(--radius)]">
+                      <Users className="w-4 h-4 text-primary" />
+                      {house.beds} Beds
+                    </div>
+                    <div className="flex items-center gap-2 bg-[#f8fafc] p-2 rounded-[var(--radius)]">
+                      <Users className="w-4 h-4 text-primary" />
+                      {house.baths} Baths
                     </div>
                   </div>
-
-                  <div className="p-5 flex-1 flex flex-col">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-bold text-lg text-gray-900 line-clamp-1">{house.title}</h3>
-                    </div>
-                    
-                    <div className="flex items-center text-gray-500 text-sm mb-4">
-                      <MapPin className="w-4 h-4 mr-1" />
-                      {house.location}
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2 mb-4 text-sm text-gray-600">
-                      <div className="flex items-center gap-1.5 bg-gray-100/50 p-2 rounded-lg">
-                        <Users className="w-4 h-4 text-primary" />
-                        {house.beds} Beds
-                      </div>
-                      <div className="flex items-center gap-1.5 bg-gray-100/50 p-2 rounded-lg">
-                        <Users className="w-4 h-4 text-primary" />
-                        {house.baths} Baths
-                      </div>
-                    </div>
-
-                    <div className="mt-auto pt-4 border-t border-gray-100 flex gap-2">
-                      <Button className="flex-1">Apply Now</Button>
-                      <Button variant="outline" className="px-3">Details</Button>
-                    </div>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {house.tags.map((tag) => (
+                      <Badge key={tag} variant="neutral">
+                        {tag}
+                      </Badge>
+                    ))}
                   </div>
-                </GlassCard>
-              </motion.div>
-            ))}
-          </div>
+                  <div className="mt-auto pt-4 flex gap-2">
+                    <Link to="/dashboard/citizen" className="flex-1">
+                      <Button className="w-full" size="sm">
+                        Apply Now
+                      </Button>
+                    </Link>
+                    <Button variant="outline" size="sm" onClick={() => setDetailsUnit(house)}>
+                      Details
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+          ))}
         </div>
       </div>
+
+      <Modal
+        open={!!detailsUnit}
+        onClose={() => setDetailsUnit(null)}
+        title={detailsUnit?.title}
+        maxWidth="md"
+      >
+        {detailsUnit && (
+          <div className="space-y-4">
+            <div className="rounded-[var(--radius)] overflow-hidden h-48">
+              <img src={detailsUnit.image} alt={detailsUnit.title} className="w-full h-full object-cover" />
+            </div>
+            <p className="text-sm text-[var(--text-secondary)] flex items-center gap-2">
+              <MapPin className="w-4 h-4" /> {detailsUnit.location}
+            </p>
+            <p className="text-lg font-semibold text-[var(--text-primary)]">
+              {formatKESShort(detailsUnit.rent)} <span className="text-sm font-normal text-[var(--text-secondary)]">/ month</span>
+            </p>
+            <p className="text-sm text-[var(--text-secondary)]">
+              {detailsUnit.type} • {detailsUnit.beds} bed • {detailsUnit.baths} bath
+              {detailsUnit.subsidized && ' • Government subsidized'}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {detailsUnit.tags.map((tag) => (
+                <Badge key={tag} variant="neutral">{tag}</Badge>
+              ))}
+            </div>
+            <Link to="/dashboard/citizen" onClick={() => setDetailsUnit(null)}>
+              <Button className="w-full">Apply Now</Button>
+            </Link>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

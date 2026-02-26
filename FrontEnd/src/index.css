@@ -1,38 +1,78 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
+/* ========== DESIGN TOKENS (HabitatLink Premium) ========== */
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  
-  --color-primary: #1B5E20;
-  --color-primary-hover: #144a18;
-  --color-secondary: #FBC02D;
-  --color-secondary-hover: #f9a825;
-  --color-accent: #6D8B3D;
-  --color-bg-start: #F1F8E9;
-  --color-bg-end: #FFFDE7;
+
+  /* Surfaces */
+  --color-bg: #F7F8FA;
+  --color-surface: #FFFFFF;
+  --color-border: #E6EAF0;
+
+  /* Text */
+  --color-text-primary: #0B1220;
+  --color-text-secondary: #475569;
+  --color-ink: #0B1220;
+  --color-muted: #475569;
+
+  /* Brand */
+  --color-primary: #0F2A43;
+  --color-primary-hover: #0a1e32;
+  --color-accent: #1FA97A;
+  --color-accent-soft: #E7F7F1;
+  --color-accent-hover: #1a8f6b;
+
+  /* Semantic */
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+
+  /* Radius (reduced roundness) */
+  --radius-lg: 10px;
+  --radius: 8px;
+  --radius-sm: 6px;
+  --radius-card: 10px;
+  --radius-input: 8px;
+  --radius-pill: 999px;
+
+  /* Shadow - single soft card shadow */
+  --shadow-card: 0 8px 30px rgba(15, 23, 42, 0.06);
 }
 
 :root {
-  --glass-bg: rgba(255, 255, 255, 0.75);
-  --glass-border: rgba(255, 255, 255, 0.4);
-  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+  --bg: #F7F8FA;
+  --surface: #FFFFFF;
+  --text-primary: #0B1220;
+  --text-secondary: #475569;
+  --border: #E6EAF0;
+  --primary: #0F2A43;
+  --accent: #1FA97A;
+  --accent-soft: #E7F7F1;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --radius-lg: 10px;
+  --radius: 8px;
+  --radius-sm: 6px;
+  --radius-card: 10px;
+  --radius-input: 8px;
+  --shadow-card: 0 8px 30px rgba(15, 23, 42, 0.06);
 }
 
 body {
-  background: linear-gradient(135deg, var(--color-bg-start) 0%, var(--color-bg-end) 100%);
+  background: var(--bg);
   min-height: 100vh;
-  color: #1a1a1a;
+  color: var(--text-primary);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.glass-panel {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.05),
-    0 2px 4px -1px rgba(0, 0, 0, 0.03),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+/* Focus ring - emerald glow */
+.focus-ring {
+  @apply outline-none ring-2 ring-accent/40 ring-offset-2 ring-offset-[var(--surface)];
+}
+
+/* Card shadow utility */
+.shadow-premium {
+  box-shadow: var(--shadow-card);
 }

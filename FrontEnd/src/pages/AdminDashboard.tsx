@@ -1,8 +1,22 @@
 import React from 'react';
-import { GlassCard } from '@/components/ui/GlassCard';
+import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
-import { MapPin, TrendingUp, AlertTriangle, Users } from 'lucide-react';
+import { Select } from '@/components/ui/Select';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  AreaChart,
+  Area,
+} from 'recharts';
+import { MapPin, TrendingUp, AlertTriangle, Users, Clock } from 'lucide-react';
 
 const INCOME_DATA = [
   { name: 'Very Low', value: 4500 },
@@ -28,143 +42,212 @@ const LOCATION_DATA = [
   { name: 'Others', value: 5 },
 ];
 
-const COLORS = ['#1B5E20', '#FBC02D', '#6D8B3D', '#FF8A65', '#90A4AE'];
+const CHART_COLORS = ['#0F2A43', '#1FA97A', '#475569', '#F59E0B', '#94a3b8'];
+
+const tooltipStyle = {
+  backgroundColor: 'var(--surface)',
+  borderRadius: '12px',
+  border: '1px solid var(--border)',
+  boxShadow: '0 8px 30px rgba(15,23,42,0.06)',
+  padding: '12px 16px',
+};
 
 export default function AdminDashboard() {
+  const kpis = [
+    {
+      label: 'Total Applicants',
+      value: '12,450',
+      change: '+12%',
+      icon: Users,
+      changePositive: true,
+    },
+    {
+      label: 'Housing Shortage',
+      value: '2,340',
+      change: '+5%',
+      icon: AlertTriangle,
+      changePositive: false,
+    },
+    {
+      label: 'Placement Rate',
+      value: '68%',
+      change: '+2.4%',
+      icon: TrendingUp,
+      changePositive: true,
+    },
+    {
+      label: 'Avg Wait Time',
+      value: '42 Days',
+      change: '-3 Days',
+      icon: Clock,
+      changePositive: true,
+    },
+  ];
+
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-primary">System Analytics</h1>
-          <p className="text-gray-600">Overview of housing demand, supply, and program performance.</p>
+          <h1 className="text-2xl font-semibold text-[var(--text-primary)] tracking-tight">
+            System Analytics
+          </h1>
+          <p className="text-[var(--text-secondary)] mt-1">
+            Overview of housing demand, supply, and program performance.
+          </p>
         </div>
-        <div className="flex gap-2">
-          <select className="p-2 rounded-lg border border-gray-200 bg-white/50 text-sm">
+        <div className="flex gap-3">
+          <Select className="w-40">
             <option>Last 30 Days</option>
             <option>Last Quarter</option>
             <option>Year to Date</option>
-          </select>
+          </Select>
           <Button variant="outline">Download Report</Button>
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {[
-          { label: 'Total Applicants', value: '12,450', change: '+12%', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
-          { label: 'Housing Shortage', value: '2,340', change: '+5%', icon: AlertTriangle, color: 'text-red-600', bg: 'bg-red-50' },
-          { label: 'Placement Rate', value: '68%', change: '+2.4%', icon: TrendingUp, color: 'text-green-600', bg: 'bg-green-50' },
-          { label: 'Avg Wait Time', value: '42 Days', change: '-3 Days', icon: ClockIcon, color: 'text-purple-600', bg: 'bg-purple-50' },
-        ].map((stat, i) => (
-          <GlassCard key={i} className="p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {kpis.map((stat, i) => (
+          <Card key={i} className="p-6">
             <div className="flex justify-between items-start mb-4">
-              <div className={`p-3 rounded-xl ${stat.bg}`}>
-                <stat.icon className={`w-6 h-6 ${stat.color}`} />
+              <div className="w-11 h-11 rounded-[var(--radius)] bg-[#f8fafc] flex items-center justify-center">
+                <stat.icon className="w-5 h-5 text-primary" />
               </div>
-              <span className={`text-xs font-bold px-2 py-1 rounded-full ${stat.change.startsWith('+') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+              <span
+                className={`text-xs font-semibold px-2.5 py-1 rounded-[999px] ${
+                  stat.changePositive ? 'bg-[var(--accent-soft)] text-accent' : 'bg-red-50 text-[var(--danger)]'
+                }`}
+              >
                 {stat.change}
               </span>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900">{stat.value}</h3>
-            <p className="text-sm text-gray-500">{stat.label}</p>
-          </GlassCard>
+            <h3 className="text-2xl font-semibold text-[var(--text-primary)]">{stat.value}</h3>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">{stat.label}</p>
+          </Card>
         ))}
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
-        {/* Demand vs Supply Chart */}
-        <GlassCard className="p-6">
-          <h3 className="font-bold text-lg text-gray-900 mb-6">Demand vs. Unit Availability</h3>
+        <Card className="p-6">
+          <h3 className="font-semibold text-lg text-[var(--text-primary)] mb-6">
+            Demand vs. Unit Availability
+          </h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={DEMAND_DATA}>
                 <defs>
                   <linearGradient id="colorApps" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#1B5E20" stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor="#1B5E20" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#0F2A43" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#0F2A43" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="colorUnits" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#FBC02D" stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor="#FBC02D" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#1FA97A" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#1FA97A" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E0E0E0" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} tickLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
+                <Tooltip contentStyle={tooltipStyle} />
+                <Area
+                  type="monotone"
+                  dataKey="applicants"
+                  stroke="#0F2A43"
+                  strokeWidth={2}
+                  fill="url(#colorApps)"
+                  name="Applicants"
                 />
-                <Area type="monotone" dataKey="applicants" stroke="#1B5E20" strokeWidth={3} fillOpacity={1} fill="url(#colorApps)" name="Applicants" />
-                <Area type="monotone" dataKey="units" stroke="#FBC02D" strokeWidth={3} fillOpacity={1} fill="url(#colorUnits)" name="New Units" />
+                <Area
+                  type="monotone"
+                  dataKey="units"
+                  stroke="#1FA97A"
+                  strokeWidth={2}
+                  fill="url(#colorUnits)"
+                  name="New Units"
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
-        </GlassCard>
+        </Card>
 
-        {/* Income Distribution */}
-        <GlassCard className="p-6">
-          <h3 className="font-bold text-lg text-gray-900 mb-6">Applicant Income Distribution</h3>
+        <Card className="p-6">
+          <h3 className="font-semibold text-lg text-[var(--text-primary)] mb-6">
+            Applicant Income Distribution
+          </h3>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={INCOME_DATA} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E0E0E0" />
-                <XAxis type="number" axisLine={false} tickLine={false} />
-                <YAxis dataKey="name" type="category" width={100} axisLine={false} tickLine={false} />
-                <Tooltip 
-                  cursor={{ fill: 'rgba(0,0,0,0.05)' }}
-                  contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+              <BarChart data={INCOME_DATA} layout="vertical" margin={{ left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--border)" />
+                <XAxis type="number" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  width={90}
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12 }}
                 />
-                <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={32}>
-                  {INCOME_DATA.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Tooltip
+                  cursor={{ fill: 'rgba(0,0,0,0.04)' }}
+                  contentStyle={tooltipStyle}
+                />
+                <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={28}>
+                  {INCOME_DATA.map((_, index) => (
+                    <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                   ))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </GlassCard>
+        </Card>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">
-        {/* Heatmap Simulation (Table) */}
         <div className="lg:col-span-2">
-          <GlassCard className="p-6 h-full">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="font-bold text-lg text-gray-900">Regional Demand Heatmap</h3>
-              <Button variant="ghost" size="sm"><MapPin className="w-4 h-4 mr-2" /> View Map</Button>
+          <Card className="p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+              <h3 className="font-semibold text-lg text-[var(--text-primary)]">
+                Regional Demand Heatmap
+              </h3>
+              <Button variant="ghost" size="sm">
+                <MapPin className="w-4 h-4 mr-2" /> View Map
+              </Button>
             </div>
-            
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {LOCATION_DATA.map((loc, i) => (
-                <div key={i} className="relative p-4 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden group hover:shadow-md transition-shadow">
-                  <div className="relative z-10">
-                    <h4 className="font-bold text-gray-900">{loc.name}</h4>
-                    <p className="text-sm text-gray-500">Waitlist: {loc.value * 120}</p>
-                    <div className="mt-3 flex items-center gap-2">
-                      <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-primary" style={{ width: `${loc.value * 2}%` }} />
-                      </div>
-                      <span className="text-xs font-bold text-primary">{loc.value}%</span>
+                <div
+                  key={i}
+                  className="relative p-4 rounded-[var(--radius-lg)] bg-[#f8fafc] hover:shadow-[0_8px_30px_rgba(15,23,42,0.06)] transition-shadow"
+                >
+                  <h4 className="font-semibold text-[var(--text-primary)]">{loc.name}</h4>
+                  <p className="text-sm text-[var(--text-secondary)]">
+                    Waitlist: {(loc.value * 120).toLocaleString()}
+                  </p>
+                  <div className="mt-3 flex items-center gap-2">
+                    <div className="flex-1 h-2 bg-[var(--border)] rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-primary rounded-full transition-all"
+                        style={{ width: `${loc.value * 2}%` }}
+                      />
                     </div>
+                    <span className="text-xs font-semibold text-primary">{loc.value}%</span>
                   </div>
-                  {/* Heatmap color overlay simulation */}
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-primary/20 to-transparent rounded-bl-full opacity-50" />
                 </div>
               ))}
-              
-              {/* Alert Card */}
-              <div className="p-4 rounded-xl bg-red-50 border border-red-100 flex flex-col justify-center items-center text-center">
-                <AlertTriangle className="w-8 h-8 text-red-500 mb-2" />
-                <h4 className="font-bold text-red-900">Critical Shortage</h4>
-                <p className="text-xs text-red-700">Downtown District requires 400+ units immediately.</p>
+              <div className="p-4 rounded-[var(--radius-lg)] bg-red-50 flex flex-col justify-center items-center text-center">
+                <AlertTriangle className="w-8 h-8 text-[var(--danger)] mb-2" />
+                <h4 className="font-semibold text-red-900">Critical Shortage</h4>
+                <p className="text-xs text-red-700 mt-1">
+                  Downtown District requires 400+ units immediately.
+                </p>
               </div>
             </div>
-          </GlassCard>
+          </Card>
         </div>
 
-        {/* Waitlist Tracker */}
-        <GlassCard className="p-6">
-          <h3 className="font-bold text-lg text-gray-900 mb-6">Waitlist Composition</h3>
+        <Card className="p-6">
+          <h3 className="font-semibold text-lg text-[var(--text-primary)] mb-6">
+            Waitlist Composition
+          </h3>
           <div className="h-[250px] w-full relative">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -174,57 +257,49 @@ export default function AdminDashboard() {
                   cy="50%"
                   innerRadius={60}
                   outerRadius={80}
-                  paddingAngle={5}
+                  paddingAngle={4}
                   dataKey="value"
                 >
-                  {LOCATION_DATA.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  {LOCATION_DATA.map((_, index) => (
+                    <Cell
+                      key={index}
+                      fill={CHART_COLORS[index % CHART_COLORS.length]}
+                    />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip contentStyle={tooltipStyle} />
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="text-center">
-                <span className="block text-3xl font-bold text-gray-900">4.2k</span>
-                <span className="text-xs text-gray-500 uppercase tracking-wide">Total</span>
+                <span className="block text-2xl font-semibold text-[var(--text-primary)]">
+                  4.2k
+                </span>
+                <span className="text-xs text-[var(--text-secondary)] uppercase tracking-wide">
+                  Total
+                </span>
               </div>
             </div>
           </div>
           <div className="mt-4 space-y-2">
             {LOCATION_DATA.slice(0, 3).map((loc, i) => (
-              <div key={i} className="flex justify-between items-center text-sm">
+              <div
+                key={i}
+                className="flex justify-between items-center text-sm"
+              >
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[i] }} />
-                  <span className="text-gray-600">{loc.name}</span>
+                  <div
+                    className="w-3 h-3 rounded-full shrink-0"
+                    style={{ backgroundColor: CHART_COLORS[i] }}
+                  />
+                  <span className="text-[var(--text-secondary)]">{loc.name}</span>
                 </div>
-                <span className="font-bold text-gray-900">{loc.value}%</span>
+                <span className="font-semibold text-[var(--text-primary)]">{loc.value}%</span>
               </div>
             ))}
           </div>
-        </GlassCard>
+        </Card>
       </div>
     </div>
-  );
-}
-
-// Helper icon
-function ClockIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
   );
 }

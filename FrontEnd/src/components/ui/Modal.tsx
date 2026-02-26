@@ -54,7 +54,7 @@ export function Modal({ open, onClose, title, children, className, maxWidth = 'l
     >
       <div
         className={cn(
-          'w-full rounded-[16px] border border-[var(--border)] bg-surface shadow-[0_8px_30px_rgba(15,23,42,0.12)]',
+          'w-full rounded-[var(--radius-lg)] bg-surface shadow-[0_8px_30px_rgba(15,23,42,0.12)]',
           'transition-all duration-200',
           maxWidthClasses[maxWidth],
           className
@@ -62,14 +62,14 @@ export function Modal({ open, onClose, title, children, className, maxWidth = 'l
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
+          <div className="flex items-center justify-between px-6 py-4">
             <h2 id="modal-title" className="text-lg font-semibold text-[var(--text-primary)]">
               {title}
             </h2>
             <button
               type="button"
               onClick={onClose}
-              className="p-2 rounded-[12px] text-[var(--text-secondary)] hover:bg-[#f1f5f9] hover:text-[var(--text-primary)] transition-colors"
+              className="p-2 rounded-[var(--radius)] text-[var(--text-secondary)] hover:bg-[#f1f5f9] hover:text-[var(--text-primary)] transition-colors"
               aria-label="Close"
             >
               <X className="w-5 h-5" />

@@ -27,9 +27,12 @@
   --color-warning: #F59E0B;
   --color-danger: #EF4444;
 
-  /* Radius */
-  --radius-card: 16px;
-  --radius-input: 12px;
+  /* Radius (reduced roundness) */
+  --radius-lg: 10px;
+  --radius: 8px;
+  --radius-sm: 6px;
+  --radius-card: 10px;
+  --radius-input: 8px;
   --radius-pill: 999px;
 
   /* Shadow - single soft card shadow */
@@ -47,8 +50,11 @@
   --accent-soft: #E7F7F1;
   --warning: #F59E0B;
   --danger: #EF4444;
-  --radius-card: 16px;
-  --radius-input: 12px;
+  --radius-lg: 10px;
+  --radius: 8px;
+  --radius-sm: 6px;
+  --radius-card: 10px;
+  --radius-input: 8px;
   --shadow-card: 0 8px 30px rgba(15, 23, 42, 0.06);
 }
 

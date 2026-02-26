@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -13,7 +13,9 @@ import {
   TableHead,
   TableCell,
 } from '@/components/ui/Table';
-import { Plus, Download, Check, X, MoreHorizontal, Building } from 'lucide-react';
+import { Plus, Download, Check, X, MoreHorizontal, Building, ImagePlus } from 'lucide-react';
+import { useAuth } from '@/context/Authcontext';
+import { uploadHousingImage } from '@/lib/upload';
 
 const stats = [
   { label: 'Total Units', value: '124', icon: Building, color: 'text-primary' },
@@ -39,6 +41,45 @@ function statusVariant(status: string): 'success' | 'danger' | 'warning' | 'neut
 
 export default function ProviderDashboard() {
   const [showNewUnitModal, setShowNewUnitModal] = useState(false);
+  const [unitImage, setUnitImage] = useState<File | null>(null);
+  const [unitImagePreview, setUnitImagePreview] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const applicationsRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+
+  const scrollToApplications = () => {
+    applicationsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    setUploadError(null);
+    if (file) {
+      setUnitImage(file);
+      setUnitImagePreview(URL.createObjectURL(file));
+    } else {
+      setUnitImage(null);
+      if (unitImagePreview) URL.revokeObjectURL(unitImagePreview);
+      setUnitImagePreview(null);
+    }
+  };
+
+  const handlePostUnitSubmit = async () => {
+    setUploadError(null);
+    const providerId = user?.id ?? 'provider';
+    if (unitImage) {
+      try {
+        await uploadHousingImage(unitImage, providerId);
+      } catch (err) {
+        setUploadError(err instanceof Error ? err.message : 'Image upload failed');
+        return;
+      }
+    }
+    setShowNewUnitModal(false);
+    setUnitImage(null);
+    if (unitImagePreview) URL.revokeObjectURL(unitImagePreview);
+    setUnitImagePreview(null);
+  };
 
   return (
     <div className="space-y-8">
@@ -68,7 +109,7 @@ export default function ProviderDashboard() {
               <p className="text-sm font-medium text-[var(--text-secondary)]">{stat.label}</p>
               <p className={`text-2xl font-semibold ${stat.color}`}>{stat.value}</p>
             </div>
-            <div className="w-11 h-11 rounded-[12px] bg-[#f8fafc] flex items-center justify-center">
+            <div className="w-11 h-11 rounded-[var(--radius)] bg-[#f8fafc] flex items-center justify-center">
               <stat.icon className={`w-5 h-5 ${stat.color}`} />
             </div>
           </Card>
@@ -76,9 +117,9 @@ export default function ProviderDashboard() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2" ref={applicationsRef}>
           <Card className="p-0 overflow-hidden">
-            <div className="p-6 border-b border-[var(--border)] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <h3 className="font-semibold text-lg text-[var(--text-primary)]">
                 Recent Applications
               </h3>
@@ -116,19 +157,19 @@ export default function ProviderDashboard() {
                         <div className="flex gap-1">
                           <button
                             type="button"
-                            className="p-2 rounded-[12px] hover:bg-[var(--accent-soft)] text-accent transition-colors"
+                            className="p-2 rounded-[var(--radius)] hover:bg-[var(--accent-soft)] text-accent transition-colors"
                           >
                             <Check className="w-4 h-4" />
                           </button>
                           <button
                             type="button"
-                            className="p-2 rounded-[12px] hover:bg-red-50 text-[var(--danger)] transition-colors"
+                            className="p-2 rounded-[var(--radius)] hover:bg-red-50 text-[var(--danger)] transition-colors"
                           >
                             <X className="w-4 h-4" />
                           </button>
                           <button
                             type="button"
-                            className="p-2 rounded-[12px] hover:bg-[#f1f5f9] text-[var(--text-secondary)] transition-colors"
+                            className="p-2 rounded-[var(--radius)] hover:bg-[#f1f5f9] text-[var(--text-secondary)] transition-colors"
                           >
                             <MoreHorizontal className="w-4 h-4" />
                           </button>
@@ -139,7 +180,7 @@ export default function ProviderDashboard() {
                 </TableBody>
               </Table>
             </div>
-            <div className="p-4 border-t border-[var(--border)] text-center">
+            <div className="p-4 text-center">
               <Button variant="ghost" size="sm">
                 View All Applications
               </Button>
@@ -148,13 +189,13 @@ export default function ProviderDashboard() {
         </div>
 
         <div className="space-y-6">
-          <Card className="p-6 bg-primary text-white border-0">
+          <Card className="p-6 bg-primary text-white">
             <h3 className="font-semibold text-lg mb-2">Priority Alert</h3>
             <p className="text-white/90 text-sm mb-4">
               5 units in &quot;Sunrise Homes&quot; have been vacant for 30+ days. Please review
               waitlist matches.
             </p>
-            <Button size="sm" className="bg-white text-primary hover:bg-white/90 border-0">
+            <Button size="sm" className="bg-white text-primary hover:bg-white/90" onClick={scrollToApplications}>
               Review Vacancies
             </Button>
           </Card>
@@ -168,7 +209,7 @@ export default function ProviderDashboard() {
               ].map((item, i) => (
                 <div
                   key={i}
-                  className="flex items-start gap-3 p-3 rounded-[12px] hover:bg-[#f8fafc] transition-colors cursor-pointer"
+                  className="flex items-start gap-3 p-3 rounded-[var(--radius)] hover:bg-[#f8fafc] transition-colors cursor-pointer"
                 >
                   <div
                     className={`w-2 h-2 mt-2 rounded-full shrink-0 ${
@@ -201,6 +242,30 @@ export default function ProviderDashboard() {
               Step 2 of 3
             </span>
           </div>
+          <div>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">Unit image (optional)</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
+              id="unit-image"
+            />
+            <label
+              htmlFor="unit-image"
+              className="flex flex-col items-center justify-center w-full h-28 rounded-[var(--radius)] bg-[#f8fafc] cursor-pointer hover:bg-[#f1f5f9] transition-colors"
+            >
+              {unitImagePreview ? (
+                <img src={unitImagePreview} alt="Preview" className="h-full w-full object-cover rounded-[var(--radius)]" />
+              ) : (
+                <>
+                  <ImagePlus className="w-8 h-8 text-[var(--text-secondary)] mb-2" />
+                  <span className="text-sm text-[var(--text-secondary)]">Click to upload image</span>
+                </>
+              )}
+            </label>
+            {uploadError && <p className="mt-2 text-sm text-[var(--danger)]">{uploadError}</p>}
+          </div>
           <div className="grid md:grid-cols-2 gap-6">
             <Select label="Property Name">
               <option>Greenwood Social Housing</option>
@@ -219,7 +284,7 @@ export default function ProviderDashboard() {
             <Button variant="outline" onClick={() => setShowNewUnitModal(false)}>
               Cancel
             </Button>
-            <Button onClick={() => setShowNewUnitModal(false)}>Next Step</Button>
+            <Button onClick={handlePostUnitSubmit}>Next Step</Button>
           </div>
         </div>
       </Modal>

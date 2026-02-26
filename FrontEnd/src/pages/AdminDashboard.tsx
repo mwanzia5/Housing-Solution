@@ -109,7 +109,7 @@ export default function AdminDashboard() {
         {kpis.map((stat, i) => (
           <Card key={i} className="p-6">
             <div className="flex justify-between items-start mb-4">
-              <div className="w-11 h-11 rounded-[12px] bg-[#f8fafc] flex items-center justify-center">
+              <div className="w-11 h-11 rounded-[var(--radius)] bg-[#f8fafc] flex items-center justify-center">
                 <stat.icon className="w-5 h-5 text-primary" />
               </div>
               <span
@@ -216,7 +216,7 @@ export default function AdminDashboard() {
               {LOCATION_DATA.map((loc, i) => (
                 <div
                   key={i}
-                  className="relative p-4 rounded-[16px] border border-[var(--border)] bg-[#f8fafc] hover:shadow-[0_8px_30px_rgba(15,23,42,0.06)] transition-shadow"
+                  className="relative p-4 rounded-[var(--radius-lg)] bg-[#f8fafc] hover:shadow-[0_8px_30px_rgba(15,23,42,0.06)] transition-shadow"
                 >
                   <h4 className="font-semibold text-[var(--text-primary)]">{loc.name}</h4>
                   <p className="text-sm text-[var(--text-secondary)]">
@@ -233,7 +233,7 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               ))}
-              <div className="p-4 rounded-[16px] bg-red-50 border border-red-200 flex flex-col justify-center items-center text-center">
+              <div className="p-4 rounded-[var(--radius-lg)] bg-red-50 flex flex-col justify-center items-center text-center">
                 <AlertTriangle className="w-8 h-8 text-[var(--danger)] mb-2" />
                 <h4 className="font-semibold text-red-900">Critical Shortage</h4>
                 <p className="text-xs text-red-700 mt-1">

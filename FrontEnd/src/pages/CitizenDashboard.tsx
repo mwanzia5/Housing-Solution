@@ -40,7 +40,7 @@ export default function CitizenDashboard() {
           title="Citizen Dashboard"
           subtitle="Manage your housing profile and applications."
         />
-        <div className="flex items-center gap-2 px-4 py-2 rounded-[999px] border border-[var(--border)] bg-[var(--surface)]">
+        <div className="flex items-center gap-2 px-4 py-2 rounded-[999px] bg-[var(--surface)]">
           <div className="w-2 h-2 bg-accent rounded-full animate-pulse" />
           <span className="text-sm font-medium text-[var(--text-primary)]">Active Applicant</span>
         </div>
@@ -50,7 +50,7 @@ export default function CitizenDashboard() {
         <div className="space-y-6">
           <Card className="p-6">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-14 h-14 rounded-full bg-[var(--accent-soft)] flex items-center justify-center text-primary border-2 border-primary/10">
+              <div className="w-14 h-14 rounded-full bg-[var(--accent-soft)] flex items-center justify-center text-primary">
                 <User className="w-7 h-7" />
               </div>
               <div>
@@ -67,7 +67,7 @@ export default function CitizenDashboard() {
               ].map((row) => (
                 <div
                   key={row.label}
-                  className="flex justify-between py-2 border-b border-[var(--border)] last:border-0"
+                  className="flex justify-between py-2"
                 >
                   <span className="text-[var(--text-secondary)]">{row.label}</span>
                   <span className="font-medium text-[var(--text-primary)]">{row.value}</span>
@@ -84,14 +84,14 @@ export default function CitizenDashboard() {
               <FileText className="w-5 h-5 text-primary" /> Documents
             </h3>
             <div className="space-y-3 mb-6">
-              <div className="flex items-center justify-between p-3 rounded-[12px] border border-[var(--accent-soft)] bg-[var(--accent-soft)]">
+              <div className="flex items-center justify-between p-3 rounded-[var(--radius)] bg-[var(--accent-soft)]">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-accent" />
                   <span className="text-sm font-medium text-[var(--text-primary)]">ID Verification</span>
                 </div>
                 <Badge variant="success">Verified</Badge>
               </div>
-              <div className="flex items-center justify-between p-3 rounded-[12px] border border-amber-200 bg-amber-50">
+              <div className="flex items-center justify-between p-3 rounded-[var(--radius)] bg-amber-50">
                 <div className="flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 text-amber-600" />
                   <span className="text-sm font-medium text-amber-900">Income Proof</span>
@@ -99,7 +99,7 @@ export default function CitizenDashboard() {
                 <span className="text-xs text-amber-700">Reviewing</span>
               </div>
             </div>
-            <div className="border-2 border-dashed border-[var(--border)] rounded-[12px] p-6 text-center hover:bg-[#f8fafc] transition-colors cursor-pointer group">
+            <div className="rounded-[var(--radius)] p-6 text-center hover:bg-[#f8fafc] transition-colors cursor-pointer group">
               <div className="w-10 h-10 rounded-full bg-[var(--surface)] flex items-center justify-center mx-auto mb-3 shadow-sm group-hover:scale-105 transition-transform">
                 <Upload className="w-5 h-5 text-primary" />
               </div>
@@ -121,12 +121,12 @@ export default function CitizenDashboard() {
                 {applicationSteps.map((step, i) => (
                   <div key={i} className="flex flex-col items-center gap-3">
                     <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all ${
+                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
                         step.status === 'completed'
-                          ? 'bg-primary border-primary text-white'
+                          ? 'bg-primary text-white'
                           : step.status === 'current'
-                            ? 'bg-[var(--surface)] border-primary text-primary shadow-md scale-110'
-                            : 'bg-[var(--surface)] border-[var(--border)] text-[var(--text-secondary)]'
+                            ? 'bg-[var(--surface)] text-primary shadow-md scale-110'
+                            : 'bg-[var(--surface)] text-[var(--text-secondary)]'
                       }`}
                     >
                       {step.status === 'completed' ? <CheckCircle className="w-4 h-4" /> : i + 1}
@@ -142,7 +142,7 @@ export default function CitizenDashboard() {
                 ))}
               </div>
             </div>
-            <div className="mt-8 p-4 rounded-[12px] border border-[var(--border)] bg-[#f8fafc] flex gap-3">
+            <div className="mt-8 p-4 rounded-[var(--radius)] bg-[#f8fafc] flex gap-3">
               <Clock className="w-5 h-5 text-primary shrink-0" />
               <div>
                 <p className="text-sm font-medium text-[var(--text-primary)]">

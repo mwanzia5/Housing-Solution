@@ -20,14 +20,14 @@ export function Table({ className, ...props }: TableProps) {
 export function TableHeader({ className, ...props }: TableHeaderProps) {
   return (
     <thead
-      className={cn('bg-[#f8fafc] text-[var(--text-secondary)] font-medium border-b border-[var(--border)]', className)}
+      className={cn('bg-[#f8fafc] text-[var(--text-secondary)] font-medium', className)}
       {...props}
     />
   );
 }
 
 export function TableBody({ className, ...props }: TableBodyProps) {
-  return <tbody className={cn('divide-y divide-[var(--border)]', className)} {...props} />;
+  return <tbody className={className} {...props} />;
 }
 
 export function TableRow({ className, ...props }: TableRowProps) {

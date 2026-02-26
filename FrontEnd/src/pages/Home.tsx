@@ -3,79 +3,91 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { SectionHeader } from '@/components/ui/SectionHeader';
-import {
-  Filter,
-  MapPin,
-  CheckCircle,
-  Clock,
-  ShieldCheck,
-} from 'lucide-react';
+import { Filter, MapPin, CheckCircle, ShieldCheck } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/context/Authcontext';
+import { useUI } from '@/context/UIContext';
+import { formatKESShort } from '@/lib/format';
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
+}
 
 export default function Home() {
+  const { profile } = useAuth();
+  const { openEligibilityModal } = useUI();
+  const firstName = profile?.full_name?.split(' ')[0] || 'there';
+  const greeting = getGreeting();
+
   return (
     <div className="space-y-8">
-      {/* Hero */}
-      <Card className="p-0 overflow-hidden">
-        <div className="relative">
-          <div className="absolute inset-0 z-0">
-            <img
-              src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop"
-              alt="City Skyline"
-              className="w-full h-64 md:h-72 object-cover opacity-15"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-[var(--surface)] via-[var(--surface)]/95 to-transparent" />
-          </div>
-          <div className="relative z-10 px-6 py-8 md:px-10 md:py-12 max-w-2xl">
-            <h1 className="text-3xl md:text-4xl font-semibold text-[var(--text-primary)] tracking-tight mb-3">
-              Welcome back
-            </h1>
-            <p className="text-base text-[var(--text-secondary)] leading-relaxed mb-6">
-              Discover affordable housing options available to you based on your income and household size.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link to="/eligibility">
-                <Button>Check Eligibility</Button>
-              </Link>
-              <Link to="/housing">
-                <Button variant="outline">Browse All Listings</Button>
-              </Link>
+      {/* Hero - extended full-width container; text stays in same position */}
+      <div className="w-screen relative left-1/2 -translate-x-1/2">
+        <Card className="p-0 overflow-visible rounded-none md:rounded-[var(--radius-lg)] w-full">
+          <div className="relative min-h-64 md:min-h-72 overflow-hidden rounded-none md:rounded-[var(--radius-lg)]">
+            <div className="absolute inset-0 z-0">
+              <img
+                src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop"
+                alt="City Skyline"
+                className="w-full h-full object-cover object-center"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/80 to-transparent" />
+            </div>
+            {/* Text block: same max-width and padding as page content so it doesn't move */}
+            <div className="relative z-10 max-w-[1280px] mx-auto px-4 md:px-6 py-8 md:py-12">
+              <div className="max-w-2xl">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[var(--text-primary)] tracking-tight mb-3 break-words">
+                  {greeting}, {firstName}.
+                </h1>
+                <p className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed mb-6 break-words">
+                  Discover affordable housing options available to you based on your income and household size.
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <Button onClick={openEligibilityModal} className="shrink-0">Check Eligibility</Button>
+                  <Link to="/housing" className="shrink-0">
+                    <Button variant="outline">Browse All Listings</Button>
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </Card>
+        </Card>
+      </div>
 
-      {/* Stats */}
-      <div className="grid md:grid-cols-3 gap-6">
-        <Card className="p-6">
-          <div className="text-3xl font-semibold text-[var(--text-primary)] mb-1">3</div>
-          <div className="text-sm font-medium text-[var(--text-secondary)]">Matched Houses</div>
-          <div className="flex gap-2 mt-4 flex-wrap">
-            <Badge variant="neutral">2 Bedroom</Badge>
-            <Badge variant="success">
-              <CheckCircle className="w-3 h-3 mr-1 inline" /> Verified
+      {/* Stats - row 1: Matched Houses + Govt Programs; row 2: KSh card on its own */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
+        <Card className="p-3 md:p-6 min-w-0">
+          <div className="text-xl md:text-3xl font-semibold text-[var(--text-primary)] mb-0.5 md:mb-1">3</div>
+          <div className="text-xs md:text-sm font-medium text-[var(--text-secondary)] truncate">Matched Houses</div>
+          <div className="flex gap-1 md:gap-2 mt-2 md:mt-4 flex-wrap">
+            <Badge variant="neutral" className="text-xs">2 Bedroom</Badge>
+            <Badge variant="success" className="text-xs">
+              <CheckCircle className="w-2.5 h-2.5 md:w-3 md:h-3 mr-0.5 md:mr-1 inline" /> Verified
             </Badge>
           </div>
         </Card>
-        <Card className="p-6">
-          <div className="text-3xl font-semibold text-[var(--text-primary)] mb-1">2</div>
-          <div className="text-sm font-medium text-[var(--text-secondary)]">Govt Programs</div>
-          <div className="flex gap-2 mt-4 flex-wrap">
-            <Badge variant="neutral">Subsidies</Badge>
-            <Badge variant="success">Available</Badge>
+        <Card className="p-3 md:p-6 min-w-0">
+          <div className="text-xl md:text-3xl font-semibold text-[var(--text-primary)] mb-0.5 md:mb-1">2</div>
+          <div className="text-xs md:text-sm font-medium text-[var(--text-secondary)] truncate">Govt Programs</div>
+          <div className="flex gap-1 md:gap-2 mt-2 md:mt-4 flex-wrap">
+            <Badge variant="neutral" className="text-xs">Subsidies</Badge>
+            <Badge variant="success" className="text-xs">Available</Badge>
           </div>
         </Card>
-        <Card className="p-6 flex items-center gap-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-2xl font-semibold text-[var(--text-primary)]">KSh 7,500</span>
+        <Card className="p-3 md:p-6 flex items-center gap-2 md:gap-4 min-w-0 col-span-2 md:col-span-1">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-0.5 md:mb-1">
+              <span className="text-lg md:text-2xl font-semibold text-[var(--text-primary)]">{formatKESShort(7500)}</span>
             </div>
-            <p className="text-xs text-[var(--text-secondary)]">
-              Based on 30% of monthly income (KSh 25,000)
+            <p className="text-xs md:text-sm text-[var(--text-secondary)]">
+              Based on 30% of monthly income ({formatKESShort(25000)})
             </p>
           </div>
-          <div className="w-20 h-14 rounded-[12px] overflow-hidden shrink-0 shadow-[0_8px_30px_rgba(15,23,42,0.06)]">
+          <div className="w-12 h-10 md:w-20 md:h-14 rounded-[var(--radius)] overflow-hidden shrink-0 shadow-[0_8px_30px_rgba(15,23,42,0.06)]">
             <img
               src="https://images.unsplash.com/photo-1460317442991-0ec209397118?q=80&w=300&auto=format&fit=crop"
               alt="Affordability"
@@ -133,20 +145,20 @@ export default function Home() {
                     </div>
                   </div>
                   <span className="text-xs text-[var(--text-secondary)] flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> Hotel
+                    <CheckCircle className="w-3 h-3" /> Hotel
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-4">
-                  <Badge variant="neutral">KSh 70,000 Deposit</Badge>
+                  <Badge variant="neutral">{formatKESShort(70000)} Deposit</Badge>
                   <Badge variant="neutral">Prepost</Badge>
                   <Badge variant="success">
                     <CheckCircle className="w-3 h-3" /> Eligible
                   </Badge>
                 </div>
               </div>
-              <div className="flex items-end justify-between mt-6 pt-4 border-t border-[var(--border)]">
+              <div className="flex items-end justify-between mt-6 pt-4">
                 <div>
-                  <span className="text-xl font-semibold text-[var(--text-primary)]">KSh 6,500</span>
+                  <span className="text-xl font-semibold text-[var(--text-primary)]">{formatKESShort(6500)}</span>
                   <span className="text-sm text-[var(--text-secondary)]">/m</span>
                   <div className="text-xs text-[var(--accent)] flex items-center gap-1 mt-1">
                     <CheckCircle className="w-3 h-3" /> Affordable Housing Program
@@ -166,7 +178,7 @@ export default function Home() {
         <SectionHeader title="Government Housing Programs For You" />
         <div className="grid md:grid-cols-2 gap-6">
           <Card className="p-5 flex gap-4 hover:shadow-[0_12px_40px_rgba(15,23,42,0.08)] transition-shadow">
-            <div className="w-20 h-20 rounded-[12px] overflow-hidden shrink-0">
+            <div className="w-20 h-20 rounded-[var(--radius)] overflow-hidden shrink-0">
               <img
                 src="https://images.unsplash.com/photo-1448630360428-65456885c650?q=80&w=300&auto=format&fit=crop"
                 alt="Program"
@@ -190,7 +202,7 @@ export default function Home() {
             </div>
           </Card>
           <Card className="p-5 flex gap-4 hover:shadow-[0_12px_40px_rgba(15,23,42,0.08)] transition-shadow">
-            <div className="w-20 h-20 rounded-[12px] bg-[#f1f5f9] flex items-center justify-center shrink-0">
+            <div className="w-20 h-20 rounded-[var(--radius)] bg-[#f1f5f9] flex items-center justify-center shrink-0">
               <ShieldCheck className="w-10 h-10 text-[var(--text-secondary)]" />
             </div>
             <div className="flex-1 min-w-0">

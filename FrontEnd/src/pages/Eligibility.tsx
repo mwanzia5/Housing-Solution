@@ -95,7 +95,7 @@ export default function Eligibility() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Card className="p-8 border-l-4 border-l-accent">
+                  <Card className="p-8">
                     <div className="flex items-start gap-4 mb-6">
                       <div className="w-14 h-14 rounded-full bg-[var(--accent-soft)] flex items-center justify-center shrink-0">
                         <CheckCircle className="w-7 h-7 text-accent" />
@@ -117,7 +117,7 @@ export default function Eligibility() {
                       ].map((prog, i) => (
                         <div
                           key={i}
-                          className="flex items-center justify-between p-4 rounded-[12px] border border-[var(--border)] bg-[#f8fafc]"
+                          className="flex items-center justify-between p-4 rounded-[var(--radius)] bg-[#f8fafc]"
                         >
                           <span className="font-medium text-[var(--text-primary)] text-sm">
                             {prog.name}
@@ -126,7 +126,7 @@ export default function Eligibility() {
                         </div>
                       ))}
                     </div>
-                    <div className="flex gap-3 p-4 rounded-[12px] bg-amber-50 border border-amber-200 mb-6">
+                    <div className="flex gap-3 p-4 rounded-[var(--radius)] bg-amber-50 mb-6">
                       <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                       <div className="text-sm text-amber-900">
                         <strong>Next Steps:</strong> You will need to provide proof of income (pay
@@ -168,7 +168,7 @@ export default function Eligibility() {
               </ol>
             </Card>
             {step === 2 && result === 'eligible' && (
-              <Card className="p-6 bg-[var(--accent-soft)] border-accent/20">
+              <Card className="p-6 bg-[var(--accent-soft)]">
                 <h3 className="font-semibold text-[var(--text-primary)] mb-2">Eligible units</h3>
                 <p className="text-sm text-[var(--text-secondary)]">
                   Browse housing listings filtered by your eligibility on the Housing page.

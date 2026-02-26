@@ -4,16 +4,18 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Badge } from '@/components/ui/Badge';
+import { Modal } from '@/components/ui/Modal';
 import { MapPin, Filter, CheckCircle, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
+import { formatKESShort } from '@/lib/format';
 
 const HOUSING_DATA = [
   {
     id: 1,
     title: 'Greenwood Social Housing',
     location: 'Downtown District',
-    rent: 450,
+    rent: 8500,
     type: 'Apartment',
     beds: 2,
     baths: 1,
@@ -25,7 +27,7 @@ const HOUSING_DATA = [
     id: 2,
     title: 'Sunrise Community Homes',
     location: 'Westside Gardens',
-    rent: 600,
+    rent: 12000,
     type: 'Townhouse',
     beds: 3,
     baths: 2,
@@ -37,7 +39,7 @@ const HOUSING_DATA = [
     id: 3,
     title: 'Oakwood Senior Living',
     location: 'North Hills',
-    rent: 350,
+    rent: 6000,
     type: 'Studio',
     beds: 1,
     baths: 1,
@@ -49,7 +51,7 @@ const HOUSING_DATA = [
     id: 4,
     title: 'Metro Affordable Units',
     location: 'City Center',
-    rent: 550,
+    rent: 15000,
     type: 'Apartment',
     beds: 2,
     baths: 1,
@@ -61,7 +63,7 @@ const HOUSING_DATA = [
     id: 5,
     title: 'Riverview Cooperative',
     location: 'East River',
-    rent: 400,
+    rent: 9500,
     type: 'Apartment',
     beds: 2,
     baths: 1,
@@ -73,7 +75,7 @@ const HOUSING_DATA = [
     id: 6,
     title: 'Highland Park Homes',
     location: 'Highland Park',
-    rent: 700,
+    rent: 22000,
     type: 'Single Family',
     beds: 4,
     baths: 2,
@@ -83,16 +85,15 @@ const HOUSING_DATA = [
   },
 ];
 
-function formatKSh(value: number) {
-  return `KSh ${value.toLocaleString()}`;
-}
+type House = (typeof HOUSING_DATA)[number];
 
 export default function Housing() {
   const [filters, setFilters] = useState({
-    maxRent: 1000,
+    maxRent: 50000,
     type: 'All',
     subsidized: false,
   });
+  const [detailsUnit, setDetailsUnit] = useState<House | null>(null);
 
   const filteredHousing = HOUSING_DATA.filter(
     (house) =>
@@ -112,13 +113,13 @@ export default function Housing() {
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
-                Max Monthly Rent: {formatKSh(filters.maxRent)}
+                Max Monthly Rent: {formatKESShort(filters.maxRent)}
               </label>
               <input
                 type="range"
-                min="0"
-                max="2000"
-                step="50"
+                min="5000"
+                max="100000"
+                step="1000"
                 value={filters.maxRent}
                 onChange={(e) => setFilters({ ...filters, maxRent: parseInt(e.target.value) })}
                 className="w-full h-2 rounded-[999px] bg-[var(--border)] appearance-none cursor-pointer accent-accent"
@@ -141,7 +142,7 @@ export default function Housing() {
                 id="subsidized"
                 checked={filters.subsidized}
                 onChange={(e) => setFilters({ ...filters, subsidized: e.target.checked })}
-                className="w-4 h-4 rounded border-[var(--border)] text-accent focus:ring-accent/40"
+                className="w-4 h-4 rounded text-accent focus:ring-accent/40"
               />
               <label htmlFor="subsidized" className="text-sm font-medium text-[var(--text-primary)]">
                 Government Subsidized Only
@@ -183,8 +184,8 @@ export default function Housing() {
                       </Badge>
                     </div>
                   )}
-                  <div className="absolute bottom-3 right-3 bg-[var(--text-primary)]/80 backdrop-blur-sm text-white px-3 py-1.5 rounded-[12px] text-sm font-medium">
-                    {formatKSh(house.rent)}/mo
+                  <div className="absolute bottom-3 right-3 bg-[var(--text-primary)]/80 backdrop-blur-sm text-white px-3 py-1.5 rounded-[var(--radius)] text-sm font-medium">
+                    {formatKESShort(house.rent)}/mo
                   </div>
                 </div>
                 <div className="p-5 flex-1 flex flex-col">
@@ -196,11 +197,11 @@ export default function Housing() {
                     {house.location}
                   </div>
                   <div className="grid grid-cols-2 gap-2 mb-4 text-sm text-[var(--text-secondary)]">
-                    <div className="flex items-center gap-2 bg-[#f8fafc] p-2 rounded-[12px]">
+                    <div className="flex items-center gap-2 bg-[#f8fafc] p-2 rounded-[var(--radius)]">
                       <Users className="w-4 h-4 text-primary" />
                       {house.beds} Beds
                     </div>
-                    <div className="flex items-center gap-2 bg-[#f8fafc] p-2 rounded-[12px]">
+                    <div className="flex items-center gap-2 bg-[#f8fafc] p-2 rounded-[var(--radius)]">
                       <Users className="w-4 h-4 text-primary" />
                       {house.baths} Baths
                     </div>
@@ -212,11 +213,13 @@ export default function Housing() {
                       </Badge>
                     ))}
                   </div>
-                  <div className="mt-auto pt-4 border-t border-[var(--border)] flex gap-2">
-                    <Button className="flex-1" size="sm">
-                      Apply Now
-                    </Button>
-                    <Button variant="outline" size="sm">
+                  <div className="mt-auto pt-4 flex gap-2">
+                    <Link to="/dashboard/citizen" className="flex-1">
+                      <Button className="w-full" size="sm">
+                        Apply Now
+                      </Button>
+                    </Link>
+                    <Button variant="outline" size="sm" onClick={() => setDetailsUnit(house)}>
                       Details
                     </Button>
                   </div>
@@ -226,6 +229,39 @@ export default function Housing() {
           ))}
         </div>
       </div>
+
+      <Modal
+        open={!!detailsUnit}
+        onClose={() => setDetailsUnit(null)}
+        title={detailsUnit?.title}
+        maxWidth="md"
+      >
+        {detailsUnit && (
+          <div className="space-y-4">
+            <div className="rounded-[var(--radius)] overflow-hidden h-48">
+              <img src={detailsUnit.image} alt={detailsUnit.title} className="w-full h-full object-cover" />
+            </div>
+            <p className="text-sm text-[var(--text-secondary)] flex items-center gap-2">
+              <MapPin className="w-4 h-4" /> {detailsUnit.location}
+            </p>
+            <p className="text-lg font-semibold text-[var(--text-primary)]">
+              {formatKESShort(detailsUnit.rent)} <span className="text-sm font-normal text-[var(--text-secondary)]">/ month</span>
+            </p>
+            <p className="text-sm text-[var(--text-secondary)]">
+              {detailsUnit.type} • {detailsUnit.beds} bed • {detailsUnit.baths} bath
+              {detailsUnit.subsidized && ' • Government subsidized'}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {detailsUnit.tags.map((tag) => (
+                <Badge key={tag} variant="neutral">{tag}</Badge>
+              ))}
+            </div>
+            <Link to="/dashboard/citizen" onClick={() => setDetailsUnit(null)}>
+              <Button className="w-full">Apply Now</Button>
+            </Link>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }
